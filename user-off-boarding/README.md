@@ -80,7 +80,7 @@ Locate the log redirection line and replace `<OUTPUT Path>` with the desired fol
 1. Open PowerShell as an administrator.
 2. Run the script:
    ```powershell
-   .\Offboarding.ps1
+   .\user-Off-boarding.ps1
    ```
 3. A grid view window will appear — select the user to offboard and click **OK**.
 4. A confirmation dialog will prompt you to confirm the action.
