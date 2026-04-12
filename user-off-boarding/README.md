@@ -138,11 +138,3 @@ Each run is logged with a timestamp and the operator's username (the account tha
 **"[UPN] doesn't have cloud assigned groups or the script encountered an error"** — The user may have no cloud-only group memberships, or the Azure AD connection failed. Check that `Connect-AzureAD` succeeded during the credential prompt.
 
 ---
-
-## Author
-
-| Field | Value |
-|---|---|
-| Author | `<Your Name>` |
-| Date | `<Date>` |
-| Version | 1.0 |
