@@ -164,6 +164,30 @@ function RemoveCloudGroups {
     }
 }
 
+#This will remove the assigned license automatically
+function removeAssignedLicenses {
+    $userLicenses = Get-MgUser -UserId $User_UPN -Property AssignedLicenses, LicenseAssignmentStates
+
+    if (-not $userLicenses.AssignedLicenses) {
+        Write-Host "No licenses found for this user."
+        return
+    }
+
+    # Only keep SKUs where assignment is direct (AssignedByGroup = null means direct)
+    $skuIdsToRemove = $userLicenses.LicenseAssignmentStates `
+        | Where-Object { $_.AssignedByGroup -eq $null } `
+        | Select-Object -ExpandProperty SkuId -Unique
+
+    if (-not $skuIdsToRemove) {
+        Write-Host "No direct licenses found. Only inherited assignments exist — nothing removed." 
+        return
+    }
+
+    Set-MgUserLicense -UserId $UserUPN -AddLicenses @() -RemoveLicenses $skuIdsToRemove
+
+    Write-Host "Successfully removed $($skuIdsToRemove.Count) direct license(s) from $UserUPN."
+}
+
 # Prompt admin to select a user from specific OUs using Out-GridView
 $User_To_Disable = '<ORGANIZATIONAL UNIT PATH>', '<ORGANIZATIONAL UNIT PATH>' | 
 ForEach-Object { 
@@ -227,6 +251,10 @@ else
             # Remove cloud group memberships
             Write-Host "Removing $($User_Name) from all cloud Groups"
             RemoveCloudGroups
+
+            #Remove assigned Licenses
+            Write-host "Removing the assigned licenses from user profile"
+            removeAssignedLicenses
 
             # Hide from GAL
             write-host "Hidding $($User_Name) from GAL"
